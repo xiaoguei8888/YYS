@@ -251,7 +251,9 @@ def solo():
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
                 print('点击小怪')
-                xx = action.cheat(pts[0], 10, 10)        
+                size = want[0].shape
+                h, w , ___ = size
+                xx = action.cheat(pts[0], w, h)        
                 action.touch(xx)
                 time.sleep(0.5)
                 continue
