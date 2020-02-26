@@ -14,12 +14,8 @@ def time_out(func):
 #ADB命令手机截屏，并发送到当前目录,opencv读取文件并返回
 @time_out
 def screen_shot(): 
-    a = "adb shell screencap -p sdcard/screen.jpg"
-    b = "adb pull sdcard/screen.jpg"
-    for row in [a, b]:
-        time.sleep(0.5)
-        os.system(row)
-
+    cmd = "adb exec-out screencap -p > screen.jpg"
+    os.system(cmd)
 
 
 # ADB命令点击屏幕，参数pos为目标坐标
