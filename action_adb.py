@@ -1,28 +1,47 @@
 import cv2,numpy,time, os, random, threading
 from winsound import Beep
 
+SCREEN_FILE_NAME = "screen.jpg"
+
 #超时3秒未完成则重启
 def time_out(func):
     def wrap_func(*args,**kwargs):
         restart = lambda : func(*args,**kwargs)
         timer = threading.Timer(3, restart)
         timer.start()
-        func(*args,**kwargs)
+        func(*args, **kwargs)
         timer.cancel()
     return wrap_func
 
 #ADB命令手机截屏，并发送到当前目录,opencv读取文件并返回
 @time_out
 def screen_shot(): 
-    cmd = "adb exec-out screencap -p > screen.jpg"
+    cmd = "adb exec-out screencap -p > %s" % SCREEN_FILE_NAME
     os.system(cmd)
 
+def screen_shot_and_load():
+    screen_shot()
+    screen = cv2.imread(SCREEN_FILE_NAME)
+    size = screen.shape
+    h, w , ___ = size
+    if w == 1280 and h == 720:
+        return screen
+    else:
+        print("需要设置模拟器分辨率为1280x720")
 
 # ADB命令点击屏幕，参数pos为目标坐标
-def touch(pos):
-    x, y = pos
-    a = "adb shell input touchscreen tap {0} {1}" .format(x, y)
+def touch(pos, offset = (0, 0)):
+    fix_x = pos[0] + offset[0]
+    fix_y = pos[1] + offset[1]
+    print("点击", fix_x, fix_y)
+    a = "adb shell input touchscreen tap {0} {1}" .format(fix_x, fix_y)
     os.system(a)
+
+def touch_want(want, pts, offset = (0, 0)):
+    size = want[0].shape
+    h, w, ___ = size
+    xx = cheat(pts[0], w, h)
+    touch(xx, offset)
 
 #蜂鸣报警器，参数n为鸣叫资料
 def alarm(n):
@@ -49,7 +68,7 @@ def load_imgs():
 
  #在背景查找目标图片，以列表形式返回查找目标的中心坐标，
  #screen是截屏图片，want是找的图片【按上面load_imgs的格式】，show是否以图片形式显示匹配结果【调试用】
-def locate(screen, want, show=0):
+def locate(screen, want, show = 0):
     loc_pos = []
     want, treshold, c_name = want[0], want[1], want[2]
     result = cv2.matchTemplate(screen, want, cv2.TM_CCOEFF_NORMED)
@@ -69,13 +88,15 @@ def locate(screen, want, show=0):
         x,y = int(x), int(y)
         loc_pos.append([x, y])
 
-    if show:  #在图上显示寻找的结果，调试时开启
+    if show == 1:  #在图上显示寻找的结果，调试时开启
         cv2.imshow('we get', screen)
         cv2.waitKey(0) 
         cv2.destroyAllWindows()
 
     if len(loc_pos) == 0:
         print(c_name, 'not found')
+    else:
+        print('found -- >', c_name)
 
     return loc_pos
 
@@ -102,4 +123,17 @@ def wait(x=0.2, y=0.5):
     t = random.uniform(x, y)
     time.sleep(t)
 
-
+# 随机移动
+def move_radom():
+    pos = (640, 360)
+    pos = cheat(pos, 400, 50)
+    touch(pos)
+    # 移动地图后等待较长时间以便截图识别准确
+    wait(1, 3)
+# 随机移动
+def move_right():
+    pos = (800, 360)
+    pos = cheat(pos, 10, 10)
+    touch(pos)
+    # 移动地图后等待较长时间以便截图识别准确
+    wait(1, 3)
