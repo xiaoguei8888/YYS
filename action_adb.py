@@ -94,9 +94,9 @@ def locate(screen, want, show = 0):
         cv2.destroyAllWindows()
 
     if len(loc_pos) == 0:
-        print(c_name, 'not found')
+        print(time.ctime(), "没有找到", c_name)
     else:
-        print('found -- >', c_name)
+        print(time.ctime(), 'found -- >', c_name)
 
     return loc_pos
 
@@ -129,7 +129,7 @@ def move_radom():
     pos = cheat(pos, 400, 50)
     touch(pos)
     # 移动地图后等待较长时间以便截图识别准确
-    wait(1, 3)
+    wait(2, 3)
 # 随机移动
 def move_right():
     pos = (800, 360)

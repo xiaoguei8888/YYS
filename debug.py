@@ -109,7 +109,7 @@ def tansuo_solo():
                 if not len(pts) == 0:
                     action.touch_want(want, pts, pos_left_up)
                     action.wait()
-                    continue
+                    break
             action.move_radom()
         print("用时", str(time.time() - start))
 
@@ -141,7 +141,7 @@ def juqing():
             if not len(pts) == 0:
                 action.touch_want(want, pts)
                 action.wait()
-                continue
+                break
         if guanbi(target):
             continue
         action.move_radom()
@@ -149,16 +149,14 @@ def juqing():
 def yuhun_juexing_solo():
     while True:
         screen = action.screen_shot_and_load()
-        for i in ["yuhun_tiaozhan", "zhunbei", "jiangli", "jixu"]:
+        for i in ["yuhun_tiaozhan", "zhunbei", "jiangli", "jixu", "xueliang"]:
             want = imgs[i]
             target = screen
             pts = action.locate(target, want, debug)
             if not len(pts) == 0:
                 action.touch_want(want, pts)
                 action.wait()
-                continue
-        if guanbi(target):
-            continue
+                break
 
 # 是否在庭院中
 def is_tingyuan(target):
