@@ -3,6 +3,11 @@ from winsound import Beep
 
 SCREEN_FILE_NAME = "screen.jpg"
 
+# 夜神模拟器
+SERIAL = "127.0.0.1:62001"
+# mumu模拟器
+# SERIAL = "127.0.0.1:7555"
+
 #超时3秒未完成则重启
 def time_out(func):
     def wrap_func(*args,**kwargs):
@@ -15,26 +20,23 @@ def time_out(func):
 
 #ADB命令手机截屏，并发送到当前目录,opencv读取文件并返回
 @time_out
-def screen_shot(): 
-    cmd = "adb exec-out screencap -p > %s" % SCREEN_FILE_NAME
+def screen_shot():
+    cmd = "adb -s {0} exec-out screencap -p > {1}".format(SERIAL, SCREEN_FILE_NAME)
     os.system(cmd)
 
 def screen_shot_and_load():
     screen_shot()
     screen = cv2.imread(SCREEN_FILE_NAME)
-    size = screen.shape
-    h, w , ___ = size
-    if w == 1280 and h == 720:
-        return screen
-    else:
-        print("需要设置模拟器分辨率为1280x720")
+    if screen is None:
+        return None
+    return screen
 
 # ADB命令点击屏幕，参数pos为目标坐标
 def touch(pos, offset = (0, 0)):
     fix_x = pos[0] + offset[0]
     fix_y = pos[1] + offset[1]
     print("点击", fix_x, fix_y)
-    a = "adb shell input touchscreen tap {0} {1}" .format(fix_x, fix_y)
+    a = "adb -s {0} shell input touchscreen tap {1} {2}".format(SERIAL, fix_x, fix_y)
     os.system(a)
 
 def touch_want(want, pts, offset = (0, 0)):
@@ -130,10 +132,17 @@ def move_radom():
     touch(pos)
     # 移动地图后等待较长时间以便截图识别准确
     wait(2, 3)
-# 随机移动
+#
 def move_right():
-    pos = (800, 360)
-    pos = cheat(pos, 10, 10)
+    pos = (760, 360)
+    pos = cheat(pos, 12, 12)
     touch(pos)
     # 移动地图后等待较长时间以便截图识别准确
-    wait(1, 3)
+    wait(2, 3)
+#
+def move_left():
+    pos = (520, 360)
+    pos = cheat(pos, 12, 12)
+    touch(pos)
+    # 移动地图后等待较长时间以便截图识别准确
+    wait(4, 5)

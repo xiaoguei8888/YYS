@@ -28,12 +28,13 @@ def select_mode():
         1 剧情任务（在庭院中，或者在剧情中）
         2 探索 - 个人（打开对应探索章节）
         3 御魂/觉醒 - 个人（打开对应层数）
+        4 突破（打开突破）
         ''')
     action.alarm(1)
     raw = input("选择功能模式：")
     index = int(raw)
 
-    mode = [0, juqing, tansuo_solo, yuhun_juexing_solo]
+    mode = [0, juqing, tansuo_solo, yuhun_juexing_solo, tupo]
     mode[index]()
 
 def fanhuitingyuan():
@@ -53,7 +54,7 @@ def fanhuitingyuan():
         screen = action.screen_shot_and_load()
 
 def tansuo_solo():
-    count = 0;
+    count = 0
     while True:
         start = time.time()
         screen = action.screen_shot_and_load()
@@ -63,6 +64,7 @@ def tansuo_solo():
         if touch_img(["queren"]) is not None:
             print("用时", str(time.time() - start))
             continue
+        # 如果检测到“固定阵容”说明在探索场景中
         # 960, 600 - 1260. 690
         want = imgs["gudingzhenrong"]
         # 剪切图片优化
@@ -84,15 +86,19 @@ def tansuo_solo():
             # 查找
             touch = touch_img(["zhandou", "shouling"], screen)
             if touch is None:
-                if count < 5:
-                    count += 1
-                    # 没找到 移动
-                    action.move_radom()
-                else:
+                if count > 10:
                     print("连续%s次没有找到...退出" % count)
                     count = 0
                     fanhui(screen)
                     continue
+                if count < 5:
+                    print("移动到右边")
+                    # 没找到 移动
+                    action.move_right()
+                else:
+                    print("移动到左边")
+                    action.move_left()
+                count += 1
         else:
             count = 0
             for i in ["zhunbei", "jiangli", "jixu", "tansuo_anniu"]:
@@ -110,7 +116,6 @@ def tansuo_solo():
                     action.touch_want(want, pts, pos_left_up)
                     action.wait()
                     break
-            action.move_radom()
         print("用时", str(time.time() - start))
 
 def touch_img(name, target = None):
@@ -142,8 +147,6 @@ def juqing():
                 action.touch_want(want, pts)
                 action.wait()
                 break
-        if guanbi(target):
-            continue
         action.move_radom()
 
 def yuhun_juexing_solo():
@@ -156,6 +159,27 @@ def yuhun_juexing_solo():
             if not len(pts) == 0:
                 action.touch_want(want, pts)
                 action.wait()
+                break
+
+# 突破
+def tupo():
+    jingong_cishu = 0
+    while True:
+        screen = action.screen_shot_and_load()
+        for i in ["zhunbei", "jiangli", "jixu", "xueliang", "tupo_jingong", "tupo_duixiang", "queding", "shuaxin"]:
+            want = imgs[i]
+            target = screen
+            pts = action.locate(target, want, debug)
+            if not len(pts) == 0:
+                # 连续点击进攻次数过多，标识没有挑战券了，退出
+                if want[2] == "tupo_jingong" and jingong_cishu == 3:
+                    print("没有挑战券了...退出")
+                    return
+                else:
+                    jingong_cishu += 1
+
+                action.touch_want(want, pts)
+                action.wait(2, 3)
                 break
 
 # 是否在庭院中
