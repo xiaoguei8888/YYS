@@ -32,3 +32,13 @@
 ##更新说明
 2019.03.06：
 添加ADB版本。功能基本不变，操控方向从电脑直接截图、点击，改成了以ADB方式控制模拟器截图点击。优点：截图点击从前台转到后台，不用担心窗口遮挡问题，不影响电脑其它工作。缺点：ADB截图文件需要从模拟器传输到电脑进行分析，效率低并且有小概率传输出错卡死。原始截图片高效稳定但占用屏幕适合组队或无人挂机，ADB效率稳定性低但不影响电脑工作适合边玩电脑边后台休闲挂机。
+
+感谢anywheretogo大佬提供的脚本框架，此脚本在原作基础上加入了很多功能，也修复了一些问题。本人体服玩家，自用脚本，所以会第一时间更新新活动的脚本。
+
+安装python 此脚本兼容Windows和Mac系统，对于不了解python的用户，首先要安装python官方的必要安装包： 3.7.6版本下载地址: https://www.python.org/downloads/release/python-376/， 选择对应的系统就好。
+
+配置程序环境 安装好python后还需要另外安装三个python库，分别是opencv，pyautogui和pyscreenshot。这个步骤Windows和Mac略有不同： Windows：管理员身份打开命令行（cmd）或者powershell，然后分别运行 pip install opencv-python 和 pip install pyautogui 和 pip install pyscreenshot。 Mac：在终端（terminal）下分别运行 pip3 install opencv-python 和 pip3 install pyautogui 和 pip3 install pyscreenshot
+
+运行脚本 打开IDLE程序，然后打开yys.py脚本源代码，点击运行（F5）则开启脚本。 模拟器或者桌面版必须把分辨率设为1280x720，其它分辨率则需要重新截图才能正常工作。
+
+解放双手 Have fun!
